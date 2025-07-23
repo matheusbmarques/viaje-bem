@@ -42,26 +42,25 @@ function App() {
 
 
   return (
-    <div className={`container${darkMode ? 'dark' : ''}`}>
-      <a>
-        <img src={darkMode ? logoWhite : logo} className="logo" alt="Logo Viaje Bem" />
-      </a>
-
-      <div style={{ position: 'absolute', top: 35, right: 35, zIndex: '-10px', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Switch
-          checked={darkMode}
-          onChange={() => setDarkMode((prev) => !prev)}
-          color="default"
-        />
-        <span style={{ color: darkMode ? '#fff' : '#111b21', fontWeight: 500 }}>
-          {darkMode ? 'Modo Escuro' : 'Modo Claro'}
-        </span>
+    <div className={`container${darkMode ? 'dark' : ''}`}> 
+      <div className="header-bar">
+        <a style={{ display: 'flex', alignItems: 'center' }}>
+          <img src={darkMode ? logoWhite : logo} className="logo header-logo" alt="Logo Viaje Bem" />
+        </a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 20 }}>
+          <Switch
+            checked={darkMode}
+            onChange={() => setDarkMode((prev) => !prev)}
+            color="default"
+          />
+          <span style={{ color: darkMode ? '#fff' : '#111b21', fontWeight: 500 }}>
+            {darkMode ? 'Modo Escuro' : 'Modo Claro'}
+          </span>
+        </div>
       </div>
-
 
       <div className="box">
         <h1 className='description'>Inclua as informações para gerar o cálculo</h1>
-
         <TextField
           label="KM (ida e volta)"
           variant="outlined"
@@ -101,7 +100,6 @@ function App() {
           <p className='response'>{cost !== null ? `R$ ${cost.toFixed(2).replace('.', ',')}` : '—'}</p>
         </div>
       </div>
-
     </div>
   )
 }
