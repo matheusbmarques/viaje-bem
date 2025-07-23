@@ -43,11 +43,11 @@ function App() {
 
   return (
     <div className={`container${darkMode ? 'dark' : ''}`}>
-      <a href="https://vite.dev" target="_blank">
+      <a>
         <img src={darkMode ? logoWhite : logo} className="logo" alt="Logo Viaje Bem" />
       </a>
 
-      <div style={{ position: 'absolute', top: 35, right: 35, zIndex: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ position: 'absolute', top: 35, right: 35, zIndex: '-10px', display: 'flex', alignItems: 'center', gap: 8 }}>
         <Switch
           checked={darkMode}
           onChange={() => setDarkMode((prev) => !prev)}
@@ -61,7 +61,7 @@ function App() {
 
       <div className="box">
         <h1 className='description'>Inclua as informações para gerar o cálculo</h1>
-        
+
         <TextField
           label="KM (ida e volta)"
           variant="outlined"
@@ -95,41 +95,12 @@ function App() {
         <Button variant='outlined' size="large" onClick={calculate} disabled={isButtonDisabled}>
           Calcular
         </Button>
+
+        <div className='boxResponse'>
+          <p className='paragraph'>custo de combustível para a viagem:</p>
+          <p className='response'>{cost !== null ? `R$ ${cost.toFixed(2).replace('.', ',')}` : '—'}</p>
+        </div>
       </div>
-
-      <div className='boxResponse'>
-        <p className='paragraph'>custo de combustível para a viagem:</p>
-        <p className='response'>{cost !== null ? `R$ ${cost.toFixed(2).replace('.', ',')}` : '—'}</p>
-      </div>
-
-      {/* <Tooltip title="Ajuda" placement="left">
-        <button className='helpBtn' onClick={handleClickOpen}>
-          <HelpIcon className='icon' />
-        </button>
-      </Tooltip>
-
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        fullWidth
-        maxWidth="lg"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Ajuda
-        </DialogTitle>
-
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-
-          </DialogContentText>
-
-
-        </DialogContent>
-
-        <DialogActions>
-          <Button onClick={handleClose}>Fechar</Button>
-        </DialogActions>
-      </Dialog> */}
 
     </div>
   )
