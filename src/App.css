@@ -1,13 +1,13 @@
-#root {
+/* #root {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   /* height: 100vh; */
-  text-align: center;
-}
+  /* text-align: center;
+} */
 
-.header-bar {
+/* .header-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -99,7 +99,7 @@
 
 /* Dark mode */
 
-.containerdark {
+/* .containerdark {
   display: flex;
   flex-direction: column;
   gap: 100px;
@@ -156,7 +156,7 @@
 
 /* hover */
 
-.dark .logo:hover {
+/*.dark .logo:hover {
   filter: drop-shadow(0 0 2em #fff);
 }
 
@@ -177,7 +177,7 @@
 
 /* responsivo */
 
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
 
   .container {
     padding: 10px;
@@ -196,5 +196,416 @@
   .header-logo {
     scale: 0.8;
     height: 4.8em;
+  }
+} */
+
+
+
+
+
+
+
+
+/* --------------- */
+
+.container-group {
+  display: flex !important;
+  justify-content: space-between !important;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.giphy {
+  width: 50%;
+  height: 100%;
+}
+
+.gif {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  padding: 35px 20px;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.logo {
+  width: 150px;
+}
+
+.description {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.response {
+  font-size: 28px;
+  font-weight: 700;
+  color: #086DFF;
+  margin: 0;
+}
+
+.inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.selects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radios {
+  display: flex;
+  gap: 20px;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.division h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.division p {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+  font-weight: 500;
+}
+
+.result-container,
+.advanced-result {
+  display: flex;
+  flex-direction: column;
+}
+
+.advanced-result,
+.response-result {
+  display: flex;
+  gap: 24px;
+}
+
+.result-container h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.header-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.advanced-container h3,
+.response-container h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+}
+
+.response-range {
+  font-size: 32px;
+  font-weight: 700;
+  color: #086DFF;
+  margin: 0;
+}
+
+.average {
+  font-size: 18px;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+}
+
+.infoMore {
+  display: flex;
+  gap: 35px;
+}
+
+.impacts h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.impacts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.impacts li {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+}
+
+.details {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.details p {
+  font-size: 14px;
+  color: #666;
+  margin: 8px 0;
+}
+
+/* PrimeReact overrides */
+.p-divider.p-divider-vertical .p-divider-horizontal {
+  padding: 0 !important;
+  margin: 8px 0 !important;
+}
+
+.p-tabview .p-tabview-panels {
+  padding: 20px 0px !important;
+}
+
+/* Responsividade */
+
+/* Tablets (768px - 1024px) */
+@media (max-width: 1024px) {
+  .container-group {
+    flex-direction: column;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .giphy {
+    width: 100%;
+    height: 300px;
+    min-height: 300px;
+  }
+
+  .content {
+    padding: 30px 20px;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  .inputs,
+  .selects {
+    grid-template-columns: 1fr;
+  }
+
+  .details {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .infoMore {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+/* Mobile (até 768px) */
+@media (max-width: 768px) {
+  .container-group {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .giphy {
+    width: 100%;
+    height: 250px;
+    min-height: 250px;
+  }
+
+  .gif {
+    object-fit: cover;
+  }
+
+  .content {
+    padding: 20px 15px;
+    gap: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .logo {
+    width: 120px;
+  }
+
+  .inputs,
+  .selects {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .radios {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .fields {
+    gap: 12px;
+  }
+
+  .footer {
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .response {
+    font-size: 24px;
+  }
+
+  .response-range {
+    font-size: 26px;
+  }
+
+  .average {
+    font-size: 16px;
+  }
+
+  .result-container h3,
+  .advanced-container h3,
+  .response-container h3 {
+    font-size: 18px;
+  }
+
+  .division {
+    padding: 12px;
+  }
+
+  .division h4,
+  .impacts h4 {
+    font-size: 14px;
+  }
+
+  .division p,
+  .impacts li,
+  .details p {
+    font-size: 13px;
+  }
+
+  .details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .details .p-divider {
+    display: none;
+  }
+
+  .header-result {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .infoMore {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .advanced-result,
+  .response-result {
+    gap: 16px;
+  }
+
+  /* Esconder texto do botão, mostrar só ícone */
+  .p-button .p-button-label {
+    display: none;
+  }
+
+  .p-button .p-button-icon {
+    margin: 0;
+  }
+}
+
+/* Mobile pequeno (até 480px) */
+@media (max-width: 480px) {
+  .giphy {
+    height: 200px;
+    min-height: 200px;
+  }
+
+  .content {
+    padding: 15px 8px;
+    max-width: 100%;
+  }
+
+  .logo {
+    width: 100px;
+  }
+
+  .response {
+    font-size: 22px;
+  }
+
+  .response-range {
+    font-size: 24px;
+  }
+
+  .average {
+    font-size: 14px;
+  }
+
+  .division {
+    padding: 10px 0;
+  }
+
+  .result-container h3,
+  .advanced-container h3,
+  .response-container h3 {
+    font-size: 16px;
   }
 }
