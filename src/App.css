@@ -1,214 +1,4 @@
-/* #root {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  /* height: 100vh; */
-  /* text-align: center;
-} */
-
-/* .header-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-  width: 100%;
-  min-width: 0;
-}
-
-.header-logo {
-  height: 6em;
-  transition: height 0.3s, padding 0.3s;
-}
-
-
-.logo {
-  height: 6em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 100px;
-}
-
-.box {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  z-index: 10;
-  border: 1px solid #EAEAEA;
-  gap: 20px;
-  padding: 2em;
-}
-
-.description {
-  font-size: 24px;
-  font-weight: 600;
-  color: #111b21;
-  opacity: 0.8;
-}
-
-.boxResponse {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  .paragraph {
-    font-size: 24px;
-    font-weight: 600;
-    color: #111b21;
-    opacity: 0.8;
-    margin: 0;
-  }
-
-  .response {
-    font-size: 32px;
-    font-weight: 700;
-    color: #111b21;
-    margin: 0;
-  }
-}
-
-.helpBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  bottom: 35px;
-  right: 35px;
-  padding: 12px;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-
-  border-radius: 50%;
-  background-color: #111b21;
-  border: none;
-  transition: all .4s ;
-
-  .icon {
-    color: #fff;
-  }
-}
-
-/* Dark mode */
-
-/* .containerdark {
-  display: flex;
-  flex-direction: column;
-  gap: 100px;
-}
-
-.dark {
-  background-color: #111b21 !important;
-  color: #fff !important;
-}
-
-.dark .box,
-.dark .boxResponse {
-  border-radius: 6px;
-  border-color: #EAEAEA;
-  background: #111b21;
-}
-
-.dark .description,
-.dark .paragraph,
-.dark .response {
-  color: #fff;
-  opacity: 0.95;
-}
-
-.dark .helpBtn {
-  background-color: #fff;
-  border: 1px solid #111b21;
-}
-.dark .helpBtn .icon {
-  color: #111b21;
-}
-
-.dark .MuiButton-outlined {
-  color: #fff;
-  border-color: #fff;
-}
-
-.dark .MuiOutlinedInput-root {
-  background: #111b21;
-  color: #fff;
-}
-.dark .MuiInputLabel-root {
-  color: #bbb;
-}
-.dark .MuiOutlinedInput-notchedOutline {
-  border-color: #fff;
-}
-.dark .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline,
-.dark .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: #8ab4f8;
-}
-
-
-
-/* hover */
-
-/*.dark .logo:hover {
-  filter: drop-shadow(0 0 2em #fff);
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #111b21);
-}
-
-.helpBtn:hover {
-  background-color: #fff;
-  transition: all .4s;
-  border: 1px solid #111b21;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-  .icon {
-    color: #111b21;
-  }
-}
-
-/* responsivo */
-
-/* @media (max-width: 600px) {
-
-  .container {
-    padding: 10px;
-    gap: 20px !important;
-  }
-
-  .containerdark {
-    padding: 10px;
-    gap: 20px !important;
-  }
-
-  .header-bar {
-    flex-direction: row;
-    align-items: center;
-  }
-  .header-logo {
-    scale: 0.8;
-    height: 4.8em;
-  }
-} */
-
-
-
-
-
-
-
-
-/* --------------- */
-
-.container-group {
+/* .container-group {
   display: flex !important;
   justify-content: space-between !important;
   width: 100%;
@@ -405,7 +195,6 @@
   margin: 8px 0;
 }
 
-/* PrimeReact overrides */
 .p-divider.p-divider-vertical .p-divider-horizontal {
   padding: 0 !important;
   margin: 8px 0 !important;
@@ -415,9 +204,6 @@
   padding: 20px 0px !important;
 }
 
-/* Responsividade */
-
-/* Tablets (768px - 1024px) */
 @media (max-width: 1024px) {
   .container-group {
     flex-direction: column;
@@ -453,7 +239,6 @@
   }
 }
 
-/* Mobile (até 768px) */
 @media (max-width: 768px) {
   .container-group {
     flex-direction: column;
@@ -521,10 +306,6 @@
     font-size: 18px;
   }
 
-  .division {
-    padding: 12px;
-  }
-
   .division h4,
   .impacts h4 {
     font-size: 14px;
@@ -561,7 +342,6 @@
     gap: 16px;
   }
 
-  /* Esconder texto do botão, mostrar só ícone */
   .p-button .p-button-label {
     display: none;
   }
@@ -571,7 +351,6 @@
   }
 }
 
-/* Mobile pequeno (até 480px) */
 @media (max-width: 480px) {
   .giphy {
     height: 200px;
@@ -608,4 +387,4 @@
   .response-container h3 {
     font-size: 16px;
   }
-}
+} */

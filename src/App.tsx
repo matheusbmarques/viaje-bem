@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './App.css';
+import styles from './App.module.scss';
 import { InputNumber } from 'primereact/inputnumber';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { Button } from 'primereact/button';
@@ -169,21 +169,21 @@ function App() {
 
 
   return (
-    <div className="container-group">
-      <div className="giphy">
-        <img src="/gif.gif" alt="Gatinho dirigindo na cidade" className='gif' />
+    <div className={styles.containerGroup}>
+      <div className={styles.giphy}>
+        <img src="/gif.gif" alt="Gatinho dirigindo na cidade" className={styles.gif} />
       </div>
 
-      <div className='content'>
-        <div className='header'>
-          <img src="/cat-driving.svg" alt="logo" className='logo' />
-          <p className='description'>calculamos o custo da viagem do seu jeito: carro, trajeto e como você dirige.</p>
+      <div className={styles.content}>
+        <div className={styles.header}>
+          <img src="/cat-driving.svg" alt="logo" className={styles.logo} />
+          <p className={styles.description}>calculamos o custo da viagem do seu jeito: carro, trajeto e como você dirige.</p>
         </div>
 
         <TabView>
           <TabPanel header="Cálculo Básico">
             {!showBasicResult ? (
-              <div className='fields'>
+              <div className={styles.fields}>
                 <InputNumber
                   value={distance}
                   onValueChange={(e) => setDistance(e.value ?? null)}
@@ -206,25 +206,26 @@ function App() {
                   mode="currency" currency="BRL" locale="pt-BR"
                 />
 
-                <div className='footer'>
+                <div className={styles.footer}>
                   <Button label="Calcular" loading={loading} onClick={calculate} disabled={isButtonDisabled} />
                 </div>
               </div>
             ) : (
-              <div className='response-container'>
-                <div className='header-result'>
+              <div className={styles.responseContainer}>
+                <div className={styles.headerResult}>
                   <h3>Custo estimado da viagem:</h3>
-                  <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetBasic} />
+                  <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetBasic} className={styles.btnReset} />
+                  <Button label="" icon="pi pi-refresh" onClick={resetBasic} className={styles.btnResetResponsive} />
                 </div>
 
-                <div className='response-result'>
-                  <p className='response-range'>{cost !== null ? `R$ ${cost.toFixed(2).replace('.', ',')}` : ''}</p>
+                <div className={styles.responseResult}>
+                  <p className={styles.responseRange}>{cost !== null ? `R$ ${cost.toFixed(2).replace('.', ',')}` : ''}</p>
                 </div>
 
                 <Divider />
 
                 {cost !== null && (
-                  <div className='division'>
+                  <div className={styles.division}>
                     <h4>Divisão do valor:</h4>
                     <p>Dividido por 2 pessoas: R$ {(cost / 2).toFixed(2).replace('.', ',')} por pessoa</p>
                     <p>Dividido por 3 pessoas: R$ {(cost / 3).toFixed(2).replace('.', ',')} por pessoa</p>
@@ -238,9 +239,9 @@ function App() {
 
           <TabPanel header="Cálculo Avançado">
             {!showAdvancedResult ? (
-              <div className='fields'>
+              <div className={styles.fields}>
 
-                <div className='inputs'>
+                <div className={styles.inputs}>
                   <InputNumber
                     value={distance}
                     onValueChange={(e) => setDistance(e.value ?? null)}
@@ -271,21 +272,21 @@ function App() {
                   />
                 </div>
 
-                <div className='selects'>
+                <div className={styles.selects}>
                   <Dropdown value={selectedPassagers} onChange={(e) => setSelectedPassagers(e.value)} options={passagers} optionLabel="label" placeholder="Selecione a quantidade de passageiros" className="w-full" />
 
                   <Dropdown value={selectedCondution} onChange={(e) => setSelectedCondution(e.value)} options={condution} optionLabel="label" placeholder="Selecione o modo de condução" className="w-full" />
                 </div>
 
-                <div className="radio-group">
+                <div className={styles.radioGroup}>
                   <label>Ar condicionado:</label>
-                  <div className="radios">
-                    <div className='radio'>
+                  <div className={styles.radios}>
+                    <div className={styles.radio}>
                       <RadioButton inputId="Yes" name="air" value="Yes" onChange={(e: RadioButtonChangeEvent) => setAir(e.value)} checked={air === 'Yes'} />
                       <label htmlFor="Yes" className="ml-2">Sim</label>
                     </div>
 
-                    <div className='radio'>
+                    <div className={styles.radio}>
                       <RadioButton inputId="No" name="air" value="No" onChange={(e: RadioButtonChangeEvent) => setAir(e.value)} checked={air === 'No'} />
                       <label htmlFor="No" className="ml-2">Não</label>
 
@@ -294,30 +295,31 @@ function App() {
 
                 </div>
 
-                <div className='footer'>
+                <div className={styles.footer}>
                   <Button label="Calcular" loading={loading} onClick={calculateAdvanced} disabled={isAdvancedButtonDisabled} />
                 </div>
               </div>
             ) : (
               advancedCost && (
-                <div className='advanced-container'>
-                  <div className='header-result'>
+                <div className={styles.advancedContainer}>
+                  <div className={styles.headerResult}>
                     <h3>Custo estimado da viagem:</h3>
-                    <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetAdvanced} />
+                    <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnReset} />
+                    <Button label="" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnResetResponsive} />
                   </div>
 
-                  <div className='advanced-result'>
-                    <div className='result'>
-                      <p className='response-range'>
+                  <div className={styles.advancedResult}>
+                    <div className={styles.result}>
+                      <p className={styles.responseRange}>
                         R$ {advancedCost.min.toFixed(0)} - R$ {advancedCost.max.toFixed(0)}
                       </p>
                       <Divider layout="vertical" />
-                      <p className='average'>Média: R$ {((advancedCost.min + advancedCost.max) / 2).toFixed(2).replace('.', ',')}</p>
+                      <p className={styles.average}>Média: R$ {((advancedCost.min + advancedCost.max) / 2).toFixed(2).replace('.', ',')}</p>
                     </div>
 
-                    <div className='infoMore'>
+                    <div className={styles.infoMore}>
                       {advancedCost.impactos.length > 0 && (
-                        <div className='impacts'>
+                        <div className={styles.impacts}>
                           <h4>Impactos no consumo:</h4>
                           <ul>
                             {advancedCost.impactos.map((impacto: string, index: number) => (
@@ -330,7 +332,7 @@ function App() {
                       <Divider layout='vertical' />
 
                       {selectedPassagers && (
-                        <div className='division'>
+                        <div className={styles.division}>
                           <h4>Divisão do valor:</h4>
                           {selectedPassagers.maxPeople >= 2 && (
                             <p>Dividido por 2 pessoas: R$ {(((advancedCost.min + advancedCost.max) / 2) / 2).toFixed(2).replace('.', ',')} por pessoa</p>
@@ -351,11 +353,15 @@ function App() {
 
                   <Divider />
 
-                  <div className='details'>
+                  <div className={styles.details}>
                     <p><strong>Consumo ajustado:</strong> {advancedCost.consumoAjustado.toFixed(2)} km/L</p>
+
                     <Divider layout="vertical" />
+
                     <p><strong>Litros necessários:</strong> {advancedCost.litros.toFixed(2)} L</p>
+
                     <Divider layout="vertical" />
+
                     <p><strong>Ajuste total aplicado:</strong> {advancedCost.ajusteTotal > 0 ? '+' : ''}{advancedCost.ajusteTotal}%</p>
                   </div>
 
