@@ -177,7 +177,10 @@ function App() {
       <div className={styles.content}>
         <div className={styles.header}>
           <img src="/cat-driving.svg" alt="logo" className={styles.logo} />
-          <p className={styles.description}>calculamos o custo da viagem do seu jeito: carro, trajeto e como você dirige.</p>
+          <div className={styles.headerDescription}>
+            <p className={styles.description}>calculamos o custo da viagem do seu jeito: carro, trajeto e como você dirige.</p>
+            <p className={styles.develop}>desenvolvido por <a href='https://matheus-marques-site.vercel.app/' target='_blank'>matheus marques</a>.</p>
+          </div>
         </div>
 
         <TabView>
@@ -370,7 +373,6 @@ function App() {
             )}
           </TabPanel>
         </TabView>
-
 
       </div>
     </div>

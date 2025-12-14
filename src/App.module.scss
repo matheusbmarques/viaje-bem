@@ -98,7 +98,7 @@ $gap-xlarge: 35px;
     .content {
         display: flex;
         flex-direction: column;
-        padding: $gap-xlarge $gap-large;
+        padding: $gap-large;
         gap: $gap-large;
         width: 100%;
         height: 100%;
@@ -140,7 +140,7 @@ $gap-xlarge: 35px;
             flex-direction: column;
             gap: $gap-small;
             @include cascade-animation(0.3s);
-
+            
             .logo {
                 width: 150px;
 
@@ -153,12 +153,37 @@ $gap-xlarge: 35px;
                 }
             }
 
-            .description {
-                font-size: 14px;
-                font-weight: 500;
-                color: $text-medium;
-                margin: 0;
+            .headerDescription {
+                display: flex;
+                flex-direction: column;
+                gap: 0px;
+
+                .description {
+                    font-size: 14px;
+                    font-weight: 500;
+                    color: $text-medium;
+                    margin: 0;
+                }
+    
+                .develop {
+                    font-size: 10px;
+                    font-weight: 500;
+                    color: $text-medium;
+                    margin: 0;
+
+                    a {
+                        color: rgb(77, 77, 255);
+                        text-decoration: none;
+                        transition: all .4s ease-in-out;
+
+                        &:hover {
+                            background: rgba(77, 77, 255, 0.2);
+                            transition: all .4s ease-in-out;
+                        }   
+                    }
+                }
             }
+            
         }
 
         .fields {
@@ -304,7 +329,8 @@ $gap-xlarge: 35px;
             .advancedResult,
             .responseResult {
                 display: flex;
-                gap: 24px;
+                flex-direction: column;
+                gap: 12px;
 
                 @media (max-width: 768px) {
                     gap: $gap-medium;
@@ -388,6 +414,8 @@ $gap-xlarge: 35px;
                     }
 
                     .impacts {
+                        padding: 10px 0;
+
                         h4 {
                             font-size: 16px;
                             font-weight: 600;
@@ -505,7 +533,7 @@ $gap-xlarge: 35px;
     }
 
     .p-tabview .p-tabview-panels {
-        padding: $gap-large 0px !important;
+        padding: 10px 0px !important;
     }
 
 }
