@@ -1,0 +1,37 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.autocompleteRoot {
+  width: 100%;
+
+  :global(.p-autocomplete-input) {
+    width: 100%;
+  }
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mainText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.secondaryText {
+  font-size: 12px;
+  color: #6b7280;
+}

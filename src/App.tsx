@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './App.module.scss';
 import { InputNumber } from 'primereact/inputnumber';
 import { TabView, TabPanel } from 'primereact/tabview';
@@ -9,6 +9,14 @@ import { RadioButton } from "primereact/radiobutton";
 import type { RadioButtonChangeEvent } from "primereact/radiobutton";
 import 'primereact/resources/themes/lara-light-cyan/theme.css';
 import 'primeicons/primeicons.css';
+// import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
+import { PlacesInput } from './components/PlacesInput';
+import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
+
+const _apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+if (_apiKey) {
+  (setOptions as any)({ key: _apiKey, version: 'weekly', language: 'pt-BR' });
+}
 
 function App() {
   const [distance, setDistance] = useState<number | null>(null);
@@ -23,8 +31,85 @@ function App() {
   const [selectedCondution, setSelectedCondution] = useState<any>(null);
   const [air, setAir] = useState('');
   const [advancedCost, setAdvancedCost] = useState<any>(null);
-  const [showBasicResult, setShowBasicResult] = useState(false);
-  const [showAdvancedResult, setShowAdvancedResult] = useState(false);
+
+  // Google Maps Places
+  const [mapsLoaded, setMapsLoaded] = useState(false);
+  const [distanceMatrixService, setDistanceMatrixService] = useState<google.maps.DistanceMatrixService | null>(null);
+  const [origin, setOrigin] = useState('');
+  const [destination, setDestination] = useState('');
+  const [loadingDistance, setLoadingDistance] = useState(false);
+  const [errorDistance, setErrorDistance] = useState('');
+  const originRef = useRef('');
+  const destinationRef = useRef('');
+  const mapsInitRef = useRef(false);
+
+  useEffect(() => {
+    if (mapsInitRef.current || !_apiKey) return;
+    mapsInitRef.current = true;
+
+    importLibrary('places')
+      .then(() => setMapsLoaded(true))
+      .catch(() => setErrorDistance('Erro ao carregar Google Maps'));
+
+    importLibrary('routes')
+      .then((lib) => {
+        const { DistanceMatrixService } = lib as google.maps.RoutesLibrary;
+        setDistanceMatrixService(new DistanceMatrixService());
+      })
+      .catch(() => {});
+  }, []);
+
+  const calcularDistancia = (orig: string, dest: string) => {
+    if (!distanceMatrixService || !orig || !dest) return;
+
+    setLoadingDistance(true);
+    setErrorDistance('');
+
+    distanceMatrixService.getDistanceMatrix(
+      {
+        origins: [orig],
+        destinations: [dest],
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC,
+        language: 'pt-BR',
+      },
+      (response, status) => {
+        setLoadingDistance(false);
+        if (status !== google.maps.DistanceMatrixStatus.OK || !response) {
+          setErrorDistance('Erro ao calcular distância');
+          return;
+        }
+        const element = response.rows[0]?.elements[0];
+        if (!element || element.status !== 'OK') {
+          setErrorDistance('Rota não encontrada entre os dois pontos');
+          return;
+        }
+        const km = parseFloat((element.distance.value / 1000).toFixed(2));
+        setDistance(km);
+        setErrorDistance('');
+      }
+    );
+  };
+
+  const handleOriginSelect = (value: string) => {
+    setOrigin(value);
+    originRef.current = value;
+    setDistance(null);
+    setErrorDistance('');
+    if (value && destinationRef.current) {
+      calcularDistancia(value, destinationRef.current);
+    }
+  };
+
+  const handleDestinationSelect = (value: string) => {
+    setDestination(value);
+    destinationRef.current = value;
+    setDistance(null);
+    setErrorDistance('');
+    if (value && originRef.current) {
+      calcularDistancia(originRef.current, value);
+    }
+  };
 
   const passagers = [
     { label: '1–2 pessoas', adjustment: 0, maxPeople: 2 },
@@ -76,7 +161,6 @@ function App() {
     const custoTotal = litrosNecessarios * preco;
 
     setCost(custoTotal);
-    setShowBasicResult(true);
     setLoading(false);
   }
 
@@ -85,7 +169,6 @@ function App() {
     setConsumption(null);
     setFuelPrice(null);
     setCost(null);
-    setShowBasicResult(false);
   }
 
   const calculateAdvanced = () => {
@@ -151,7 +234,6 @@ function App() {
       ajusteTotal
     });
 
-    setShowAdvancedResult(true);
     setLoading(false);
   }
 
@@ -164,7 +246,11 @@ function App() {
     setSelectedCondution(null);
     setAir('');
     setAdvancedCost(null);
-    setShowAdvancedResult(false);
+    setOrigin('');
+    setDestination('');
+    originRef.current = '';
+    destinationRef.current = '';
+    setErrorDistance('');
   }
 
 
@@ -185,73 +271,95 @@ function App() {
 
         <TabView>
           <TabPanel header="Cálculo Básico">
-            {!showBasicResult ? (
-              <div className={styles.fields}>
-                <InputNumber
-                  value={distance}
-                  onValueChange={(e) => setDistance(e.value ?? null)}
-                  placeholder="Digite a distância (ida e volta)"
-                  suffix="km"
-                />
+            <div className={styles.fields}>
+              <InputNumber
+                value={distance}
+                onValueChange={(e) => setDistance(e.value ?? null)}
+                placeholder="Digite a distância (ida e volta)"
+                suffix="km"
+              />
 
-                <InputNumber
-                  value={consumption}
-                  onValueChange={(e) => setConsumption(e.value ?? null)}
-                  placeholder="Consumo por litro do automóvel"
-                  locale="pt-BR"
-                  suffix='km/L'
-                />
+              <InputNumber
+                value={consumption}
+                onValueChange={(e) => setConsumption(e.value ?? null)}
+                placeholder="Consumo por litro do automóvel"
+                locale="pt-BR"
+                suffix='km/L'
+              />
 
-                <InputNumber
-                  value={fuelPrice}
-                  onValueChange={(e) => setFuelPrice(e.value ?? null)}
-                  placeholder="Preço do litro do combustível"
-                  mode="currency" currency="BRL" locale="pt-BR"
-                />
+              <InputNumber
+                value={fuelPrice}
+                onValueChange={(e) => setFuelPrice(e.value ?? null)}
+                placeholder="Preço do litro do combustível"
+                mode="currency" currency="BRL" locale="pt-BR"
+              />
 
-                <div className={styles.footer}>
-                  <Button label="Calcular" loading={loading} onClick={calculate} disabled={isButtonDisabled} />
-                </div>
+              <div className={styles.footer}>
+                <Button label="Calcular" loading={loading} onClick={calculate} disabled={isButtonDisabled} />
               </div>
-            ) : (
-              <div className={styles.responseContainer}>
-                <div className={styles.headerResult}>
-                  <h3>Custo estimado da viagem:</h3>
-                  <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetBasic} className={styles.btnReset} />
-                  <Button label="" icon="pi pi-refresh" onClick={resetBasic} className={styles.btnResetResponsive} />
-                </div>
+            </div>
 
-                <div className={styles.responseResult}>
-                  <p className={styles.responseRange}>{cost !== null ? `R$ ${cost.toFixed(2).replace('.', ',')}` : ''}</p>
-                </div>
-
-                <Divider />
-
-                {cost !== null && (
-                  <div className={styles.division}>
-                    <h4>Divisão do valor:</h4>
-                    <p>Dividido por 2 pessoas: R$ {(cost / 2).toFixed(2).replace('.', ',')} por pessoa</p>
-                    <p>Dividido por 3 pessoas: R$ {(cost / 3).toFixed(2).replace('.', ',')} por pessoa</p>
-                    <p>Dividido por 4 pessoas: R$ {(cost / 4).toFixed(2).replace('.', ',')} por pessoa</p>
-                    <p>Dividido por 5 pessoas: R$ {(cost / 5).toFixed(2).replace('.', ',')} por pessoa</p>
-                  </div>
-                )}
+            {cost !== null && (
+            <div className={styles.responseContainer}>
+              <div className={styles.headerResult}>
+                <h3>Custo estimado da viagem:</h3>
+                <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetBasic} className={styles.btnReset} />
+                <Button label="" icon="pi pi-refresh" onClick={resetBasic} className={styles.btnResetResponsive} />
               </div>
+
+              <div className={styles.responseResult}>
+                <p className={styles.responseRange}>{cost !== null ? `R$ ${cost.toFixed(2).replace('.', ',')}` : '—'}</p>
+              </div>
+
+              <Divider />
+
+              {cost !== null && (
+                <div className={styles.division}>
+                  <h4>Divisão do valor:</h4>
+                  <p>Dividido por 2 pessoas: R$ {(cost / 2).toFixed(2).replace('.', ',')} por pessoa</p>
+                  <p>Dividido por 3 pessoas: R$ {(cost / 3).toFixed(2).replace('.', ',')} por pessoa</p>
+                  <p>Dividido por 4 pessoas: R$ {(cost / 4).toFixed(2).replace('.', ',')} por pessoa</p>
+                  <p>Dividido por 5 pessoas: R$ {(cost / 5).toFixed(2).replace('.', ',')} por pessoa</p>
+                </div>
+              )}
+            </div>
             )}
           </TabPanel>
 
           <TabPanel header="Cálculo Avançado">
-            {!showAdvancedResult ? (
-              <div className={styles.fields}>
+            <div className={styles.fields}>
 
-                <div className={styles.inputs}>
-                  <InputNumber
-                    value={distance}
-                    onValueChange={(e) => setDistance(e.value ?? null)}
-                    placeholder="Digite a distância (ida e volta)"
-                    suffix="km"
+                <div className={styles.placesGroup}>
+                  <PlacesInput
+                    label="Ponto de Partida"
+                    value={origin}
+                    onChange={handleOriginSelect}
+                    placeholder="Digite sua origem (ex: São Paulo, SP)"
+                    mapsLoaded={mapsLoaded}
                   />
 
+                  <PlacesInput
+                    label="Destino"
+                    value={destination}
+                    onChange={handleDestinationSelect}
+                    placeholder="Digite seu destino (ex: Rio de Janeiro, RJ)"
+                    mapsLoaded={mapsLoaded}
+                  />
+
+                  <div className={styles.distanceInfo}>
+                    {loadingDistance ? (
+                      <span className={styles.distanceLoading}>Calculando distância...</span>
+                    ) : errorDistance ? (
+                      <span className={styles.distanceError}>{errorDistance}</span>
+                    ) : distance !== null ? (
+                      <span className={styles.distanceValue}>Distância calculada: <strong>{distance} km</strong> (ida e volta)</span>
+                    ) : (
+                      <span className={styles.distancePlaceholder}>Digite a origem e o destino para calcular a distância automaticamente.</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.inputsThree}>
                   <InputNumber
                     value={consumption}
                     onValueChange={(e) => setConsumption(e.value ?? null)}
@@ -302,15 +410,16 @@ function App() {
                   <Button label="Calcular" loading={loading} onClick={calculateAdvanced} disabled={isAdvancedButtonDisabled} />
                 </div>
               </div>
-            ) : (
-              advancedCost && (
-                <div className={styles.advancedContainer}>
-                  <div className={styles.headerResult}>
-                    <h3>Custo estimado da viagem:</h3>
-                    <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnReset} />
-                    <Button label="" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnResetResponsive} />
-                  </div>
 
+            {advancedCost && (
+            <div className={styles.advancedContainer}>
+              <div className={styles.headerResult}>
+                <h3>Custo estimado da viagem:</h3>
+                <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnReset} />
+                <Button label="" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnResetResponsive} />
+              </div>
+
+              <>
                   <div className={styles.advancedResult}>
                     <div className={styles.result}>
                       <p className={styles.responseRange}>
@@ -367,9 +476,8 @@ function App() {
 
                     <p><strong>Ajuste total aplicado:</strong> {advancedCost.ajusteTotal > 0 ? '+' : ''}{advancedCost.ajusteTotal}%</p>
                   </div>
-
-                </div>
-              )
+                </>
+            </div>
             )}
           </TabPanel>
         </TabView>

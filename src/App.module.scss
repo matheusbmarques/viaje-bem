@@ -215,6 +215,29 @@ $gap-xlarge: 35px;
                 }
             }
 
+            .inputsThree {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: $gap-large;
+
+                @media (max-width: 768px) {
+                    grid-template-columns: 1fr;
+                    gap: 12px;
+                }
+
+                >* {
+                    @include cascade-animation(0.5s);
+
+                    &:nth-child(2) {
+                        animation-delay: 0.6s;
+                    }
+
+                    &:nth-child(3) {
+                        animation-delay: 0.7s;
+                    }
+                }
+            }
+
             .radioGroup {
                 display: flex;
                 flex-direction: column;
@@ -233,6 +256,41 @@ $gap-xlarge: 35px;
                         align-items: center;
                         gap: $gap-small;
                     }
+                }
+            }
+
+            .placesGroup {
+                display: flex;
+                flex-direction: column;
+                gap: $gap-medium;
+                @include cascade-animation(0.4s);
+            }
+
+            .distanceInfo {
+                min-height: 20px;
+
+                .distanceLoading {
+                    font-size: 13px;
+                    color: $text-medium;
+                }
+
+                .distanceError {
+                    font-size: 13px;
+                    color: #dc2626;
+                }
+
+                .distanceValue {
+                    font-size: 13px;
+                    color: #166534;
+                    background: #dcfce7;
+                    border-radius: 4px;
+                    padding: 4px 8px;
+                    display: inline-block;
+                }
+
+                .distancePlaceholder {
+                    font-size: 13px;
+                    color: $text-medium;
                 }
             }
 
