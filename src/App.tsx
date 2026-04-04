@@ -31,6 +31,8 @@ function App() {
   const [selectedCondution, setSelectedCondution] = useState<any>(null);
   const [air, setAir] = useState('');
   const [advancedCost, setAdvancedCost] = useState<any>(null);
+  const [showBasicResult, setShowBasicResult] = useState(false);
+  const [showAdvancedResult, setShowAdvancedResult] = useState(false);
 
   // Google Maps Places
   const [mapsLoaded, setMapsLoaded] = useState(false);
@@ -161,6 +163,7 @@ function App() {
     const custoTotal = litrosNecessarios * preco;
 
     setCost(custoTotal);
+    setShowBasicResult(true);
     setLoading(false);
   }
 
@@ -169,6 +172,7 @@ function App() {
     setConsumption(null);
     setFuelPrice(null);
     setCost(null);
+    setShowBasicResult(false);
   }
 
   const calculateAdvanced = () => {
@@ -234,6 +238,7 @@ function App() {
       ajusteTotal
     });
 
+    setShowAdvancedResult(true);
     setLoading(false);
   }
 
@@ -246,6 +251,7 @@ function App() {
     setSelectedCondution(null);
     setAir('');
     setAdvancedCost(null);
+    setShowAdvancedResult(false);
     setOrigin('');
     setDestination('');
     originRef.current = '';
@@ -271,6 +277,7 @@ function App() {
 
         <TabView>
           <TabPanel header="Cálculo Básico">
+            {!showBasicResult && (
             <div className={styles.fields}>
               <InputNumber
                 value={distance}
@@ -298,6 +305,7 @@ function App() {
                 <Button label="Calcular" loading={loading} onClick={calculate} disabled={isButtonDisabled} />
               </div>
             </div>
+            )}
 
             {cost !== null && (
             <div className={styles.responseContainer}>
@@ -327,6 +335,7 @@ function App() {
           </TabPanel>
 
           <TabPanel header="Cálculo Avançado">
+            {!showAdvancedResult && (
             <div className={styles.fields}>
 
                 <div className={styles.placesGroup}>
@@ -410,6 +419,7 @@ function App() {
                   <Button label="Calcular" loading={loading} onClick={calculateAdvanced} disabled={isAdvancedButtonDisabled} />
                 </div>
               </div>
+            )}
 
             {advancedCost && (
             <div className={styles.advancedContainer}>
