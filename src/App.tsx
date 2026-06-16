@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './App.module.scss';
 import { InputNumber } from 'primereact/inputnumber';
-import { TabView, TabPanel } from 'primereact/tabview';
 import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
 import { Dropdown } from 'primereact/dropdown';
 import { RadioButton } from "primereact/radiobutton";
 import type { RadioButtonChangeEvent } from "primereact/radiobutton";
+import { InputSwitch } from 'primereact/inputswitch';
 import 'primereact/resources/themes/lara-light-cyan/theme.css';
 import 'primeicons/primeicons.css';
 // import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
@@ -23,15 +23,12 @@ function App() {
   const [consumption, setConsumption] = useState<number | null>(null);
   const [fuelPrice, setFuelPrice] = useState<number | null>(null);
   const [toll, setToll] = useState<number | null>(null);
-  const [cost, setCost] = useState<number | null>(null);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isAdvancedButtonDisabled, setIsAdvancedButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [selectedPassagers, setSelectedPassagers] = useState<any>(null);
   const [selectedCondution, setSelectedCondution] = useState<any>(null);
   const [air, setAir] = useState('');
   const [advancedCost, setAdvancedCost] = useState<any>(null);
-  const [showBasicResult, setShowBasicResult] = useState(false);
   const [showAdvancedResult, setShowAdvancedResult] = useState(false);
 
   // Google Maps Places
@@ -41,6 +38,11 @@ function App() {
   const [destination, setDestination] = useState('');
   const [loadingDistance, setLoadingDistance] = useState(false);
   const [errorDistance, setErrorDistance] = useState('');
+  const [roundTrip, setRoundTrip] = useState(false);
+
+  const effectiveDistance = distance !== null
+    ? parseFloat((roundTrip ? distance * 2 : distance).toFixed(2))
+    : null;
   const originRef = useRef('');
   const destinationRef = useRef('');
   const mapsInitRef = useRef(false);
@@ -131,54 +133,20 @@ function App() {
   // Custo combustível = Litros × Preço por litro
 
   useEffect(() => {
-    const km = distance ?? NaN;
+    const km = effectiveDistance ?? NaN;
     const consumo = consumption ?? NaN;
     const preco = fuelPrice ?? NaN;
 
     const isInvalid =
       isNaN(km) || isNaN(consumo) || isNaN(preco) || consumo <= 0;
 
-    setIsButtonDisabled(isInvalid);
-  }, [distance, consumption, fuelPrice]);
-
-  useEffect(() => {
-    const km = distance ?? NaN;
-    const consumo = consumption ?? NaN;
-    const preco = fuelPrice ?? NaN;
-
-    const isInvalid =
-      isNaN(km) || isNaN(consumo) || isNaN(preco) || consumo <= 0 ||
-      !selectedPassagers || !selectedCondution || !air;
-
     setIsAdvancedButtonDisabled(isInvalid);
-  }, [distance, consumption, fuelPrice, selectedPassagers, selectedCondution, air]);
-
-  const calculate = () => {
-    setLoading(true);
-    const km = distance ?? 0;
-    const consumo = consumption ?? 0;
-    const preco = fuelPrice ?? 0;
-
-    const litrosNecessarios = km / consumo;
-    const custoTotal = litrosNecessarios * preco;
-
-    setCost(custoTotal);
-    setShowBasicResult(true);
-    setLoading(false);
-  }
-
-  const resetBasic = () => {
-    setDistance(null);
-    setConsumption(null);
-    setFuelPrice(null);
-    setCost(null);
-    setShowBasicResult(false);
-  }
+  }, [distance, roundTrip, consumption, fuelPrice]);
 
   const calculateAdvanced = () => {
     setLoading(true);
 
-    const km = distance ?? 0;
+    const km = effectiveDistance ?? 0;
     const consumoBase = consumption ?? 0;
     const preco = fuelPrice ?? 0;
     const pedagio = toll ?? 0;
@@ -275,131 +243,116 @@ function App() {
           </div>
         </div>
 
-        <TabView>
-          <TabPanel header="Cálculo Básico">
-            {!showBasicResult && (
-            <div className={styles.fields}>
-              <InputNumber
-                value={distance}
-                onValueChange={(e) => setDistance(e.value ?? null)}
-                placeholder="Digite a distância (ida e volta)"
-                suffix="km"
-              />
-
-              <InputNumber
-                value={consumption}
-                onValueChange={(e) => setConsumption(e.value ?? null)}
-                placeholder="Consumo por litro do automóvel"
-                locale="pt-BR"
-                suffix='km/L'
-              />
-
-              <InputNumber
-                value={fuelPrice}
-                onValueChange={(e) => setFuelPrice(e.value ?? null)}
-                placeholder="Preço do litro do combustível"
-                mode="currency" currency="BRL" locale="pt-BR"
-              />
-
-              <div className={styles.footer}>
-                <Button label="Calcular" loading={loading} onClick={calculate} disabled={isButtonDisabled} />
-              </div>
-            </div>
-            )}
-
-            {cost !== null && (
-            <div className={styles.responseContainer}>
-              <div className={styles.headerResult}>
-                <h3>Custo estimado da viagem:</h3>
-                <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetBasic} className={styles.btnReset} />
-                <Button label="" icon="pi pi-refresh" onClick={resetBasic} className={styles.btnResetResponsive} />
-              </div>
-
-              <div className={styles.responseResult}>
-                <p className={styles.responseRange}>{cost !== null ? `R$ ${cost.toFixed(2).replace('.', ',')}` : '—'}</p>
-              </div>
-
-              <Divider />
-
-              {cost !== null && (
-                <div className={styles.division}>
-                  <h4>Divisão do valor:</h4>
-                  <p>Dividido por 2 pessoas: R$ {(cost / 2).toFixed(2).replace('.', ',')} por pessoa</p>
-                  <p>Dividido por 3 pessoas: R$ {(cost / 3).toFixed(2).replace('.', ',')} por pessoa</p>
-                  <p>Dividido por 4 pessoas: R$ {(cost / 4).toFixed(2).replace('.', ',')} por pessoa</p>
-                  <p>Dividido por 5 pessoas: R$ {(cost / 5).toFixed(2).replace('.', ',')} por pessoa</p>
-                </div>
-              )}
-            </div>
-            )}
-          </TabPanel>
-
-          <TabPanel header="Cálculo Avançado">
+        <>
             {!showAdvancedResult && (
             <div className={styles.fields}>
 
                 <div className={styles.placesGroup}>
-                  <PlacesInput
-                    label="Ponto de Partida"
-                    value={origin}
-                    onChange={handleOriginSelect}
-                    placeholder="Digite sua origem (ex: São Paulo, SP)"
-                    mapsLoaded={mapsLoaded}
-                  />
+                  <div className={styles.fieldWrapper}>
+                    <span className={styles.fieldLabel}>
+                      Ponto de Partida <span className={styles.badgeRequired}>*</span>
+                    </span>
+                    <PlacesInput
+                      value={origin}
+                      onChange={handleOriginSelect}
+                      placeholder="Digite sua origem (ex: São Paulo, SP)"
+                      mapsLoaded={mapsLoaded}
+                    />
+                  </div>
 
-                  <PlacesInput
-                    label="Destino"
-                    value={destination}
-                    onChange={handleDestinationSelect}
-                    placeholder="Digite seu destino (ex: Rio de Janeiro, RJ)"
-                    mapsLoaded={mapsLoaded}
-                  />
+                  <div className={styles.fieldWrapper}>
+                    <span className={styles.fieldLabel}>
+                      Destino <span className={styles.badgeRequired}>*</span>
+                    </span>
+                    <PlacesInput
+                      value={destination}
+                      onChange={handleDestinationSelect}
+                      placeholder="Digite seu destino (ex: Rio de Janeiro, RJ)"
+                      mapsLoaded={mapsLoaded}
+                    />
+                  </div>
 
                   <div className={styles.distanceInfo}>
-                    {loadingDistance ? (
-                      <span className={styles.distanceLoading}>Calculando distância...</span>
-                    ) : errorDistance ? (
-                      <span className={styles.distanceError}>{errorDistance}</span>
-                    ) : distance !== null ? (
-                      <span className={styles.distanceValue}>Distância calculada: <strong>{distance} km</strong> (ida e volta)</span>
-                    ) : (
-                      <span className={styles.distancePlaceholder}>Digite a origem e o destino para calcular a distância automaticamente.</span>
-                    )}
+                    <div>
+                      {loadingDistance ? (
+                        <span className={styles.distanceLoading}>Calculando distância...</span>
+                      ) : errorDistance ? (
+                        <span className={styles.distanceError}>{errorDistance}</span>
+                      ) : effectiveDistance !== null ? (
+                        <span className={styles.distanceValue}>Distância calculada: <strong>{effectiveDistance} km</strong>{roundTrip ? ' (ida e volta)' : ' (somente ida)'}</span>
+                      ) : (
+                        <span className={styles.distancePlaceholder}>Digite a origem e o destino para calcular a distância automaticamente.</span>
+                      )}
+                    </div>
+                    <div className={styles.roundTripToggle}>
+                      <label htmlFor="roundTrip">Ida e volta</label>
+                      <InputSwitch inputId="roundTrip" checked={roundTrip} onChange={(e) => setRoundTrip(e.value)} />
+                    </div>
                   </div>
                 </div>
 
                 <div className={styles.inputsThree}>
-                  <InputNumber
-                    value={consumption}
-                    onValueChange={(e) => setConsumption(e.value ?? null)}
-                    placeholder="Consumo por litro do automóvel"
-                    locale="pt-BR"
-                    suffix='km/L'
-                  />
+                  <div className={styles.fieldWrapper}>
+                    <span className={styles.fieldLabel}>
+                      Consumo do veículo <span className={styles.badgeRequired}>*</span>
+                    </span>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      value={consumption}
+                      onValueChange={(e) => setConsumption(e.value ?? null)}
+                      placeholder="ex: 12 km/L"
+                      locale="pt-BR"
+                      suffix='km/L'
+                    />
+                  </div>
 
-                  <InputNumber
-                    value={fuelPrice}
-                    onValueChange={(e) => setFuelPrice(e.value ?? null)}
-                    placeholder="Preço do litro do combustível"
-                    mode="currency" currency="BRL" locale="pt-BR"
-                  />
+                  <div className={styles.fieldWrapper}>
+                    <span className={styles.fieldLabel}>
+                      Preço do combustível <span className={styles.badgeRequired}>*</span>
+                    </span>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      value={fuelPrice}
+                      onValueChange={(e) => setFuelPrice(e.value ?? null)}
+                      placeholder="ex: R$ 6,00"
+                      mode="currency" currency="BRL" locale="pt-BR"
+                    />
+                  </div>
 
-                  <InputNumber
-                    value={toll}
-                    onValueChange={(e) => setToll(e.value ?? null)}
-                    placeholder="Preço total do pedágio"
-                    mode="currency" currency="BRL" locale="pt-BR"
-                  />
+                  <div className={styles.fieldWrapper}>
+                    <span className={styles.fieldLabel}>
+                      Pedágio
+                    </span>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      value={toll}
+                      onValueChange={(e) => setToll(e.value ?? null)}
+                      placeholder="ex: R$ 30,00"
+                      mode="currency" currency="BRL" locale="pt-BR"
+                    />
+                  </div>
                 </div>
 
                 <div className={styles.selects}>
-                  <Dropdown value={selectedPassagers} onChange={(e) => setSelectedPassagers(e.value)} options={passagers} optionLabel="label" placeholder="Selecione a quantidade de passageiros" className="w-full" />
+                  <div className={styles.fieldWrapper}>
+                    <span className={styles.fieldLabel}>
+                      Passageiros / carga
+                    </span>
+                    <Dropdown value={selectedPassagers} onChange={(e) => setSelectedPassagers(e.value)} options={passagers} optionLabel="label" placeholder="Selecione" className="w-full" />
+                  </div>
 
-                  <Dropdown value={selectedCondution} onChange={(e) => setSelectedCondution(e.value)} options={condution} optionLabel="label" placeholder="Selecione o modo de condução" className="w-full" />
+                  <div className={styles.fieldWrapper}>
+                    <span className={styles.fieldLabel}>
+                      Perfil de condução
+                    </span>
+                    <Dropdown value={selectedCondution} onChange={(e) => setSelectedCondution(e.value)} options={condution} optionLabel="label" placeholder="Selecione" className="w-full" />
+                  </div>
                 </div>
 
                 <div className={styles.radioGroup}>
-                  <label>Ar condicionado:</label>
+                  <span className={styles.fieldLabel}>
+                    Ar condicionado
+                  </span>
                   <div className={styles.radios}>
                     <div className={styles.radio}>
                       <RadioButton inputId="Yes" name="air" value="Yes" onChange={(e: RadioButtonChangeEvent) => setAir(e.value)} checked={air === 'Yes'} />
@@ -489,8 +442,7 @@ function App() {
                 </>
             </div>
             )}
-          </TabPanel>
-        </TabView>
+        </>
 
       </div>
     </div>

@@ -268,6 +268,20 @@ $gap-xlarge: 35px;
 
             .distanceInfo {
                 min-height: 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: $gap-medium;
+
+                .roundTripToggle {
+                    display: flex;
+                    align-items: center;
+                    gap: $gap-small;
+                    font-size: 13px;
+                    color: $text-medium;
+                    white-space: nowrap;
+                    flex-shrink: 0;
+                }
 
                 .distanceLoading {
                     font-size: 13px;
@@ -293,6 +307,29 @@ $gap-xlarge: 35px;
                     color: $text-medium;
                 }
             }
+
+            .fieldWrapper {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .fieldLabel {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                color: $text-dark;
+            }
+
+            .badgeRequired {
+                font-size: 11px;
+                font-weight: 500;
+                border-radius: 100px;
+                color: #086DFF;
+            }
+
 
             .footer {
                 display: flex;
