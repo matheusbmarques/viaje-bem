@@ -12,11 +12,27 @@ import 'primeicons/primeicons.css';
 // import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import { PlacesInput } from './components/PlacesInput';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
+import { toPng } from 'html-to-image';
+import TripSummaryCard from './components/TripSummaryCard';
+import { Messages } from 'primereact/messages';
 
 const _apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
 if (_apiKey) {
   (setOptions as any)({ key: _apiKey, version: 'weekly', language: 'pt-BR' });
 }
+
+const parseImpact = (impacto: string): { percentage: string; label: string } => {
+  const match = impacto.match(/^(.+?)\s*\(([^)]+)\)$/);
+  if (match) return { label: match[1].trim(), percentage: match[2] };
+  return { label: impacto, percentage: '' };
+};
+
+const getGridCols = (count: number): string => {
+  if (count === 1) return 'repeat(1, 1fr)';
+  if (count === 2) return 'repeat(2, 1fr)';
+  if (count === 3) return 'repeat(3, 1fr)';
+  return 'repeat(2, 1fr)';
+};
 
 function App() {
   const [distance, setDistance] = useState<number | null>(null);
@@ -39,6 +55,10 @@ function App() {
   const [loadingDistance, setLoadingDistance] = useState(false);
   const [errorDistance, setErrorDistance] = useState('');
   const [roundTrip, setRoundTrip] = useState(false);
+  const [sharing, setSharing] = useState(false);
+
+  const summaryCardRef = useRef<HTMLDivElement>(null);
+  const msgsRef = useRef<Messages>(null);
 
   const effectiveDistance = distance !== null
     ? parseFloat((roundTrip ? distance * 2 : distance).toFixed(2))
@@ -210,6 +230,33 @@ function App() {
     setLoading(false);
   }
 
+  const handleShare = async () => {
+    if (!summaryCardRef.current) return;
+    setSharing(true);
+    try {
+      const dataUrl = await toPng(summaryCardRef.current, { cacheBust: true });
+      const blob = await (await fetch(dataUrl)).blob();
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      msgsRef.current?.show([{
+        severity: 'success',
+        summary: 'Imagem copiada!',
+        detail: 'Cole diretamente no WhatsApp ou onde quiser.',
+        life: 3500,
+        closable: false,
+      }]);
+    } catch {
+      msgsRef.current?.show([{
+        severity: 'error',
+        summary: 'Erro ao copiar',
+        detail: 'Não foi possível copiar a imagem.',
+        life: 3500,
+        closable: false,
+      }]);
+    } finally {
+      setSharing(false);
+    }
+  };
+
   const resetAdvanced = () => {
     setDistance(null);
     setConsumption(null);
@@ -376,10 +423,19 @@ function App() {
 
             {advancedCost && (
             <div className={styles.advancedContainer}>
+              <Messages ref={msgsRef} className={styles.copyMessage} />
               <div className={styles.headerResult}>
                 <h3>Custo estimado da viagem:</h3>
-                <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnReset} />
-                <Button label="" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnResetResponsive} />
+                <div className={styles.headerActions}>
+                  <Button
+                    label="Copiar imagem"
+                    loading={sharing}
+                    onClick={handleShare}
+                    className={styles.btnShare}
+                  />
+                  <Button label="Novo cálculo" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnReset} />
+                  <Button label="" icon="pi pi-refresh" onClick={resetAdvanced} className={styles.btnResetResponsive} />
+                </div>
               </div>
 
               <>
@@ -394,35 +450,50 @@ function App() {
 
                     <div className={styles.infoMore}>
                       {advancedCost.impactos.length > 0 && (
-                        <div className={styles.impacts}>
+                        <div className={styles.miniSection}>
                           <h4>Impactos no consumo:</h4>
-                          <ul>
-                            {advancedCost.impactos.map((impacto: string, index: number) => (
-                              <li key={index}>• {impacto}</li>
-                            ))}
-                          </ul>
+                          <div
+                            className={styles.miniCardsGrid}
+                            style={{ gridTemplateColumns: getGridCols(advancedCost.impactos.length) }}
+                          >
+                            {advancedCost.impactos.map((impacto: string, index: number) => {
+                              const { percentage, label } = parseImpact(impacto);
+                              return (
+                                <div key={index} className={styles.miniCard}>
+                                  {percentage && <span className={styles.miniCardBadge}>{percentage}</span>}
+                                  <span className={styles.miniCardLabel}>{label}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
                       )}
 
-                      <Divider layout='vertical' />
-
-                      {selectedPassagers && (
-                        <div className={styles.division}>
-                          <h4>Divisão do valor:</h4>
-                          {selectedPassagers.maxPeople >= 2 && (
-                            <p>Dividido por 2 pessoas: R$ {(((advancedCost.min + advancedCost.max) / 2) / 2).toFixed(2).replace('.', ',')} por pessoa</p>
-                          )}
-                          {selectedPassagers.maxPeople >= 3 && (
-                            <p>Dividido por 3 pessoas: R$ {(((advancedCost.min + advancedCost.max) / 2) / 3).toFixed(2).replace('.', ',')} por pessoa</p>
-                          )}
-                          {selectedPassagers.maxPeople >= 4 && (
-                            <p>Dividido por 4 pessoas: R$ {(((advancedCost.min + advancedCost.max) / 2) / 4).toFixed(2).replace('.', ',')} por pessoa</p>
-                          )}
-                          {selectedPassagers.maxPeople >= 5 && (
-                            <p>Dividido por 5 pessoas: R$ {(((advancedCost.min + advancedCost.max) / 2) / 5).toFixed(2).replace('.', ',')} por pessoa</p>
-                          )}
-                        </div>
-                      )}
+                      {selectedPassagers && (() => {
+                        const avg = (advancedCost.min + advancedCost.max) / 2;
+                        const items = Array.from(
+                          { length: selectedPassagers.maxPeople - 1 },
+                          (_, i) => i + 2
+                        );
+                        return (
+                          <div className={styles.miniSection}>
+                            <h4>Divisão do valor:</h4>
+                            <div
+                              className={styles.miniCardsGrid}
+                              style={{ gridTemplateColumns: getGridCols(items.length) }}
+                            >
+                              {items.map((count) => (
+                                <div key={count} className={styles.miniCard}>
+                                  <span className={styles.miniCardValue}>
+                                    R$ {(avg / count).toFixed(2).replace('.', ',')}
+                                  </span>
+                                  <span className={styles.miniCardLabel}>para <strong>{count} pessoas</strong></span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -440,6 +511,22 @@ function App() {
                     <p><strong>Ajuste total aplicado:</strong> {advancedCost.ajusteTotal > 0 ? '+' : ''}{advancedCost.ajusteTotal}%</p>
                   </div>
                 </>
+
+              {/* Hidden card used only for image generation */}
+              <div className={styles.hiddenCard}>
+                <TripSummaryCard
+                  ref={summaryCardRef}
+                  origin={origin}
+                  destination={destination}
+                  distance={effectiveDistance}
+                  roundTrip={roundTrip}
+                  advancedCost={advancedCost}
+                  selectedPassagers={selectedPassagers}
+                  fuelPrice={fuelPrice}
+                  consumption={consumption}
+                  toll={toll}
+                />
+              </div>
             </div>
             )}
         </>
